@@ -1,0 +1,20 @@
+#Player list issues:
+Main issue is with getting the accurate list of players in the program quickly.
+In the current version all players must be carefully handpicked, and when players leave or come late
+it is not easy to fix for people who do not know how to use python.
+The current code deals well with the situation, but the UI is not friendly,
+and people without python knowlege have trouble doing it.
+Making a more intuitive and fast UI is important for the program actually getting used.
+
+Player names should be written alphebetically in order to help find them more easily.
+[easy fix]
+
+#Matchmaking issues:
+It is currently not possible to have players choose partners.
+It is a common request, and would be great to have a feature that would do this
+
+#ELO rating system:
+There is the basic code for ELO rating system, but it is not implemented.
+It is an open question as to its utility, and whether it is worth coding at all.
+If you feel like completeing it, feel free.
+
