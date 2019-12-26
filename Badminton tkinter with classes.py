@@ -1,30 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Spyder Editor
-
-This is a temporary script file.
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Dec 24 21:05:25 2019
-
-@author: turqu
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 12 17:10:02 2019
-
-@author: turqu
-"""
-
-
 #Byron Jones   bjone079@uottawa.ca
-#This program is for organising badminton games
-#There is a ELO rating system, and a group rating system.
-#The ELO needs to be calibrated through play, while the group system is plug and play.
+#This program is for organising badminton games.
 #The badminton club I will use it for is doubles play, with 4 available courts.
+
 import random
 from tkinter import *
 from tkinter import ttk
