@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 27 00:46:44 2019
+
+@author: turqu
+"""
+
 #Byron Jones   bjone079@uottawa.ca
 #This program is for organising badminton games.
 #The badminton club I will use it for is doubles play, with 4 available courts.
@@ -11,7 +18,7 @@ import tkinter.scrolledtext as tkscrolled
 class Player:
 
 
-    def __init__(self, name = 'Guest', group = 2, games = 0):        #rating currently not in use
+    def __init__(self, name = 'Guest', group = 2, games = 0):
 
         self.name = name
 
@@ -31,19 +38,20 @@ class Player:
 class Badminton:
 
     def __init__(self, master):
-        
+
+        #mainframe has all wigets except top menu, and listboxes
         mainframe = Frame(master)
         mainframe.grid(padx = 5, pady = 5)
         
-        
+        #mainframe wigets
         self.add_button = Button(mainframe, text = "Add Player", command=self.add_player)
         self.add_button.grid(row = 0, column = 1, padx = 5, pady = 5, sticky = W)
 
         self.remove_button = Button(mainframe, text = "Remove Player", command = self.remove_player)
-        self.remove_button.grid(row = 1, column = 1, padx = 5, pady = 5)
+        self.remove_button.grid(row = 1, column = 1, padx = 5, pady = 5, sticky = W)
 
         self.new_game_button = Button(mainframe, text = "New Game", command = self.new_game)
-        self.new_game_button.grid(row = 0, rowspan = 2, column = 2, columnspan = 2, padx = 5, pady = 5)
+        self.new_game_button.grid(sticky = E, row = 0, rowspan = 2, column = 2, columnspan = 2, padx = 5, pady = 5)
 
         self.new_game_button.focus()
         self.new_game_button.bind("<Return>", self.new_game)
@@ -51,7 +59,20 @@ class Badminton:
         self.game_display = tkscrolled.ScrolledText(mainframe, undo = True, width = 40, height = 32)
         self.game_display.grid(row = 0, rowspan = 2, column = 4, columnspan = 2)
 
+        self.text_display = StringVar()
+        self.text_display.set('Displays name, skill group, and number of games played ^^')
+        
+        self.info = Label(master, textvariable = self.text_display, fg = "blue",bd = 1, relief = SUNKEN)
+        self.info.grid(row = 2, column = 0, columnspan = 4, sticky = SW)
 
+        #top menu 
+        self.topmenu = Menu(master)
+        master.config(menu = self.topmenu)
+
+        self.submenu = Menu(self.topmenu)
+        self.topmenu.add_cascade(label = "File", menu = self.submenu)
+
+        #Listbox with scrollbar for adding players
         add_frame = Frame(mainframe)
         add_frame.grid(row = 0, column = 0)
         
@@ -61,11 +82,12 @@ class Badminton:
         self.add_scrollbar.config(command = self.add_listbox.yview)
 
         self.add_listbox.bind("<Double-Button-1>", self.add_player)
+        self.add_listbox.bind("<ButtonRelease-1>", self.label_update)
 
         self.add_scrollbar.pack(side = RIGHT, fill = Y)
         self.add_listbox.pack()
         
-
+        #Listbox with scrollbar for removing players
         remove_frame = Frame(mainframe)
         remove_frame.grid(row = 1, column = 0)
 
@@ -75,19 +97,19 @@ class Badminton:
         self.remove_scrollbar.config(command = self.remove_listbox.yview)
 
         self.remove_listbox.bind("<Double-Button-1>", self.remove_player)
+        self.remove_listbox.bind("<ButtonRelease-1>", self.label_update)
         
         self.remove_scrollbar.pack(side = RIGHT, fill = Y)
         self.remove_listbox.pack()
 
-        self.current = None
-
+        #populate the listboxes
         for member in add_list:
             self.add_listbox.insert(END, member)
 
         for player in sorted(player_strlist):
             self.remove_listbox.insert(END, player)
 
-
+        #make lists accessible for other functions
         self.player_strlist = player_strlist
 
         self.member_strlist = member_strlist
@@ -97,8 +119,36 @@ class Badminton:
         self.member_list = member_list
 
         self.player_list = player_list
+
+    def label_update(self, *args):
+        '''This displays the selected players stats'''
+
+        r_player = self.remove_listbox.curselection()
+
+        if r_player == '':                                  #prevents error message on doubleclick
+            return
+        
+        if self.remove_listbox.curselection() != ():        #if something is selected find player
+
+            for person in player_list:
+                if str(person.name) == str(self.player_strlist[r_player[0]]):
+                    self.text_display.set(str(person.name) + ' | Games Played = ' + str(person.games) + ' | Skill Group = ' + str(person.group))
+                    break
+
+        a_player = self.add_listbox.curselection()
+
+        if a_player == '':
+            return
+        
+        if self.add_listbox.curselection() != ():
+            
+            for person in member_list:
+                if str(person.name) == str(self.add_list[a_player[0]]):
+                    self.text_display.set(str(person.name) + ' | Games Played = ' + str(person.games) + ' | Skill Group = ' + str(person.group))
+                    break
         
     def new_game(self, *args):
+        '''This prints the game list, with courts to the text box'''
 
         random.shuffle(player_list)                         #shuffle list to randomise play
     
@@ -108,8 +158,6 @@ class Badminton:
         total[0] += 1
 
         game_text = str('\nGames played = ' + str(total[0]) + '\n\n\n')
-        
-        #print('\n Games played = '+ str(total[0]))
         
         i = 0
 
@@ -137,22 +185,26 @@ class Badminton:
                 game_text = game_text + '\nCOURT: ' + str(b // 4) + '\n\n'
 
         game_text = game_text + '----------------------------------------'
-        self.game_display.insert(1.0, str(game_text))
+
+        self.game_display.insert(1.0, str(game_text))       #prints games to listbox
+
         orgfield = []                                       #clear temp list
 
         self.new_game_button.focus()
 
     def remove_player(self, *args):
+        '''This removes the selected player from the player list'''
 
         player = self.remove_listbox.curselection()
 
-        if player == ():
+        if player == ():                                    #if nothing selected move on
             return
-        
-        for person in player_list:
+ 
+        for person in player_list:                          #removes selected player from player list
             if str(person.name) == str(self.player_strlist[player[0]]):
                 player_list.remove(person)
 
+        #Updates both listboxes
         self.player_strlist = []
 
         for player in player_list:
@@ -172,28 +224,29 @@ class Badminton:
 
         for member in self.add_list:
             self.add_listbox.insert(END, member)
-
-        self.new_game_button.focus()
             
     def add_player(self, *args):
+        '''This adds the selected to person to the player list'''
 
         player = self.add_listbox.curselection()
 
         if player == ():
             return
         
-        for person in member_list:
-            if str(person.name) == str(self.add_list[player[0]]):
+        for person in member_list:                          #Adds selected player to the player list and makes the added players games equal to other players
+            if str(person.name) == str(self.add_list[player[0]]):       #this makes sure that they play a fair amount.
                 person.games = self.player_list[len(player_list) // 2].games 
                 player_list.append(person)
                 break
-        
+
+        #This updates both listboxes
         self.player_strlist = []
 
-        for player in player_list:
-            self.player_strlist.append(player.name)
+        for gamer in player_list:
+            self.player_strlist.append(gamer.name)
 
         self.player_strlist = sorted(self.player_strlist)
+        
         self.remove_listbox.delete('0', 'end')
         
         for player in sorted(self.player_strlist):
@@ -208,11 +261,7 @@ class Badminton:
         for member in self.add_list:
             self.add_listbox.insert(END, member)
 
-        self.new_game_button.focus()
 
-        
-
-   
 "-------------------------------------------------------------------------------------------------------------------------"
 #This area is for creating the player list, and member_list.
 #The member list has all the members in the club, and drop-in slots
@@ -356,6 +405,7 @@ member_list.append(drop_in_6)
 
 
 "--------------------------------------------------------------------------------------------------------------------------"
+
 member_strlist = []
 
 player_strlist = []
@@ -366,15 +416,12 @@ for member in member_list:
 for player in player_list:
     player_strlist.append(player.name)
 
-#print(player_strlist)
-
 add_list = sorted(list(set(member_strlist).difference(set(player_strlist))))
 
 add_list = list(sorted(add_list))
 
 player_strlist = sorted(player_strlist)
 
-#print(player_strlist)
 "-------------------------------------------------------------------------------------------"
 
 root = Tk()
