@@ -77,7 +77,7 @@ class Badminton:
         
         self.round_display = tkscrolled.ScrolledText(self.round_display_frame, undo = True, width = 40, height = 32)
 
-        self.round_label = Label(self.round_display_frame, text = 'Round Display', fg = 'green')
+        self.round_label = Label(self.round_display_frame, text = 'Round Display', font = 10)
         
         self.round_display.grid(row = 1, column = 0, padx = 2, pady = 2)
 
@@ -91,7 +91,7 @@ class Badminton:
 
         # ***Remove Player Frame ***
         
-        remove_frame = Frame(self.mainframe)
+        remove_frame = Frame(self.mainframe, bd = 2, relief = SUNKEN, bg = 'light gray')
 
         self.remove_listbox = Listbox(remove_frame)
         self.remove_scrollbar = Scrollbar(remove_frame, orient = VERTICAL)
@@ -100,7 +100,7 @@ class Badminton:
 
         self.remove_button = Button(remove_frame, text = "Remove Player", command=self.remove_player)
 
-        self.remove_label = Label(remove_frame, text = 'Currently Playing', fg = 'green')
+        self.remove_label = Label(remove_frame, text = 'Currently Playing', bg = 'light gray', font = 10)
 
         self.remove_listbox.bind("<Double-Button-1>", self.remove_player)
         self.remove_listbox.bind("<ButtonRelease-1>", self.label_update)
@@ -122,7 +122,7 @@ class Badminton:
 
         # *** Add Player Frame ***
         
-        add_frame = Frame(self.mainframe)
+        add_frame = Frame(self.mainframe, bd = 2, relief = SUNKEN, bg = 'light gray')
         
         self.add_listbox = Listbox(add_frame)
         self.add_scrollbar = Scrollbar(add_frame, orient = VERTICAL)
@@ -132,7 +132,7 @@ class Badminton:
 
         self.add_button = Button(add_frame, text = "Add Player", command = self.add_player)
 
-        self.add_label = Label(add_frame, text = 'Not Playing', fg = 'green')
+        self.add_label = Label(add_frame, text = 'Not Playing',  bg = 'light gray', font = 10)
 
         self.add_listbox.bind("<Double-Button-1>", self.add_player)
         self.add_listbox.bind("<ButtonRelease-1>", self.label_update)
@@ -141,7 +141,7 @@ class Badminton:
         
         self.add_scrollbar.grid(row = 1, column = 1, sticky = 'ns')
 
-        self.add_button.grid(row = 1, column = 2)
+        self.add_button.grid(row = 1, column = 2, padx = 2)
 
         self.add_label.grid(row = 0, columnspan = 3)
 
