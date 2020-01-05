@@ -326,6 +326,14 @@ player_list = []
 
 total = [0]
 
+#Format:
+#Firstname_Lastname (Use captial letters) =
+#Player ('Firstname Lastname', Skill group)
+#Skill group is from 1-4
+# 1 = Beginner
+# 2 = Intermidiate
+# 3 = Advanced
+# 4 = Expert
 
 Byron_Jones = Player('Byron Jones', 3)
 member_list.append(Byron_Jones)
