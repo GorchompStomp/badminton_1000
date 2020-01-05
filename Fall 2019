@@ -70,12 +70,12 @@ class Badminton:
 
         self.round_display_frame = Frame(self.mainframe)
 
-        self.new_round_button = Button(self.round_display_frame, text = "New Round", command = self.new_game)
+        self.new_round_button = Button(self.round_display_frame, text = "New Round", font = 0, command = self.new_game)
 
         self.new_round_button.focus()
         self.new_round_button.bind("<Return>", self.new_game)
         
-        self.round_display = tkscrolled.ScrolledText(self.round_display_frame, undo = True, width = 40, height = 32)
+        self.round_display = tkscrolled.ScrolledText(self.round_display_frame, undo = True, width = 40, height = 32, font = 0)
 
         self.round_label = Label(self.round_display_frame, text = 'Round Display', font = 10)
         
@@ -93,12 +93,12 @@ class Badminton:
         
         remove_frame = Frame(self.mainframe, bd = 2, relief = SUNKEN, bg = 'light gray')
 
-        self.remove_listbox = Listbox(remove_frame)
+        self.remove_listbox = Listbox(remove_frame, font = 0)
         self.remove_scrollbar = Scrollbar(remove_frame, orient = VERTICAL)
         self.remove_listbox.config(yscrollcommand = self.remove_scrollbar.set)
         self.remove_scrollbar.config(command = self.remove_listbox.yview)
 
-        self.remove_button = Button(remove_frame, text = "Remove Player", command=self.remove_player)
+        self.remove_button = Button(remove_frame, text = "Remove Player", font = 0, command=self.remove_player)
 
         self.remove_label = Label(remove_frame, text = 'Currently Playing', bg = 'light gray', font = 10)
 
@@ -124,13 +124,13 @@ class Badminton:
         
         add_frame = Frame(self.mainframe, bd = 2, relief = SUNKEN, bg = 'light gray')
         
-        self.add_listbox = Listbox(add_frame)
+        self.add_listbox = Listbox(add_frame, font = 0)
         self.add_scrollbar = Scrollbar(add_frame, orient = VERTICAL)
         self.add_listbox.config(yscrollcommand = self.add_scrollbar.set)
 
         self.add_scrollbar.config(command = self.add_listbox.yview)
 
-        self.add_button = Button(add_frame, text = "Add Player", command = self.add_player)
+        self.add_button = Button(add_frame, text = "Add Player", font = 0, command = self.add_player)
 
         self.add_label = Label(add_frame, text = 'Not Playing',  bg = 'light gray', font = 10)
 
@@ -159,7 +159,7 @@ class Badminton:
         self.text_display = StringVar()
         self.text_display.set('Displays name, skill group, and number of games played ^^')
         
-        self.info = Label(self.mainframe, textvariable = self.text_display, fg = "blue", bd = 1, relief = SUNKEN, anchor = W)
+        self.info = Label(self.mainframe, textvariable = self.text_display, fg = "blue", bd = 1, font = 0, relief = SUNKEN, anchor = W)
         self.info.grid(row = 2, column = 0, columnspan = 3, sticky = 'ew', padx = 2)
         
     
