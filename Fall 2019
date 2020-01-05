@@ -42,10 +42,10 @@ class Badminton:
         self.mainframe.grid(row=0, column=0, sticky= 'nsew')
 
         #Create a 5x3 (rows x columns) grid of buttons inside the frame
-        for row_index in range(3):
-            Grid.rowconfigure(self.mainframe, row_index, weight=1)
-            for col_index in range(3):
-                Grid.columnconfigure(self.mainframe, col_index, weight=1)
+        
+        Grid.rowconfigure(self.mainframe, 1, weight=1)
+        for col_index in range(3):
+            Grid.columnconfigure(self.mainframe, col_index, weight=1)
 
 
 ##        self.mainframe = Frame(master)
@@ -79,7 +79,7 @@ class Badminton:
 
         self.round_label = Label(self.round_display_frame, text = 'Round Display', font = 10)
         
-        self.round_display.grid(row = 1, column = 0, padx = 2, pady = 2)
+        self.round_display.grid(row = 1, column = 0, padx = 2, pady = 2, sticky = 'ns')
 
         self.new_round_button.grid(row = 1, column = 2, pady = 2, padx = 2)
 
@@ -227,7 +227,7 @@ class Badminton:
 
                 game_text = game_text + '\nCOURT: ' + str(b // 4) + '\n\n'
 
-        game_text = game_text + '----------------------------------------'
+        game_text = game_text + '--------------------------------------------------------------'
 
         self.round_display.insert(1.0, str(game_text))       #prints games to listbox
 
