@@ -6,6 +6,7 @@ import random
 from tkinter import *
 from tkinter import ttk
 import tkinter.scrolledtext as tkscrolled
+from tkinter import messagebox
 
 
 class Player:
@@ -75,9 +76,12 @@ class Badminton:
         self.new_round_button.focus()
         self.new_round_button.bind("<Return>", self.new_game)
         
-        self.round_display = tkscrolled.ScrolledText(self.round_display_frame, undo = True, width = 40, height = 32, font = 0)
+        self.round_display = tkscrolled.ScrolledText(self.round_display_frame, undo = True, width = 26, height = 28, font = 0)
 
-        self.round_label = Label(self.round_display_frame, text = 'Round Display', font = 10)
+        self.round_label_text = StringVar()
+        self.round_label_text.set('Round ' + str(total[0]) + ' Display')
+
+        self.round_label = Label(self.round_display_frame, textvariable = self.round_label_text, font = 10)
         
         self.round_display.grid(row = 1, column = 0, padx = 2, pady = 2, sticky = 'ns')
 
@@ -200,8 +204,10 @@ class Badminton:
         orgfield = []                                       #temp list for new round
         total[0] += 1
 
-        game_text = str('\nGames played = ' + str(total[0]) + '\n\n\n')
-        
+        self.round_label_text.set('Round ' + str(total[0]) + ' Display')
+
+        #game_text = str('\nGames played = ' + str(total[0]) + '\n\n\n')
+        game_text = ''
         i = 0
 
         while i < 16:
@@ -227,7 +233,9 @@ class Badminton:
 
                 game_text = game_text + '\nCOURT: ' + str(b // 4) + '\n\n'
 
-        game_text = game_text + '--------------------------------------------------------------'
+        game_text = game_text + '\nRound = ' + str(total[0]) + '\n'
+
+        game_text = game_text + '----------------------------------------'
 
         self.round_display.insert(1.0, str(game_text))       #prints games to listbox
 
@@ -242,10 +250,19 @@ class Badminton:
 
         player = self.remove_listbox.curselection()
 
-        if player == ():                                    #if nothing selected move on
-            self.text_display.set("CANNOT REMOVE, NO PLAYER SELECTED")
+##        if player == ():                                    #if nothing selected move on
+##            self.text_display.set("CANNOT REMOVE, NO PLAYER SELECTED")
+##            return
+
+        if self.add_listbox.curselection() != ():
+            self.text_display.set("CHOOSE PLAYER FROM *CURRENTLY PLAYING*")
+            messagebox.showerror("Remove Error", "You can only remove players from the *CURRENTLY PLAYING* list")
             return
- 
+
+        if player == ():                                    #if nothing selected move on
+            self.text_display.set("CANNOT REMOVE, NO PLAYER from *CURRENTLY PLAYING* SELECTED")
+            return
+        
         for person in player_list:                          #removes selected player from player list
             if str(person.name) == str(self.player_strlist[player[0]]):
                 self.text_display.set(str(person.name) + ' has been removed.')
@@ -278,8 +295,13 @@ class Badminton:
 
         player = self.add_listbox.curselection()
 
+        if self.remove_listbox.curselection() != ():
+            self.text_display.set("CHOOSE PLAYER FROM *NOT PLAYING*")
+            messagebox.showerror("Add Error", "You can only add players from the *NOT PLAYING* list")
+            return
+
         if player == ():
-            self.text_display.set("CANNOT ADD, NO PLAYER SELECTED")
+            self.text_display.set("CANNOT ADD, NO PLAYER from *NOT PLAYING* SELECTED")
             return
         
         for person in member_list:                          #Adds selected player to the player list and makes the added players games equal to other players
@@ -326,14 +348,6 @@ player_list = []
 
 total = [0]
 
-#Format:
-#Firstname_Lastname (Use captial letters) =
-#Player ('Firstname Lastname', Skill group)
-#Skill group is from 1-4
-# 1 = Beginner
-# 2 = Intermidiate
-# 3 = Advanced
-# 4 = Expert
 
 Byron_Jones = Player('Byron Jones', 3)
 member_list.append(Byron_Jones)
@@ -434,6 +448,10 @@ player_list.append(Emerald)
 Nicholas_Gauthier = Player('Nicholas Gauthier', 2)
 member_list.append(Nicholas_Gauthier)
 player_list.append(Nicholas_Gauthier)
+
+Chuck_Norris = Player('Chuck Norris', 9000)
+member_list.append(Chuck_Norris)
+#player_list.append(Chuck_Norris)
 
 
 
