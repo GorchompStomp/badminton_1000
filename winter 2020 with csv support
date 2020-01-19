@@ -1,0 +1,379 @@
+#Byron Jones   bjone079@uottawa.ca
+#This program is for organising badminton rounds.
+#The badminton club I will use it for is doubles play, with 4 available courts.
+
+import random
+from tkinter import *
+from tkinter import ttk
+import tkinter.scrolledtext as tkscrolled
+from tkinter import messagebox
+import csv
+from operator import itemgetter
+import datetime
+import time
+
+
+
+
+class Badminton:
+
+    def __init__(self, master):
+
+        master_list = []
+        self.master_list = master_list
+
+        playing_list_str = []
+        self.playing_list_str = playing_list_str
+        
+        not_playing_list_str = []
+        self.not_playing_list_str = not_playing_list_str
+
+        total = [0]
+        self.total = total
+
+
+        with open('member_file.csv', newline = '') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                master_list.append(row)
+
+        for i in range(0, len(master_list)):
+            master_list[i]['skill'] = int(master_list[i]['skill'])
+            master_list[i]['games'] = int(master_list[i]['games'])
+            master_list[i]['playing'] = int(master_list[i]['playing'])
+
+        for i in range(0, len(master_list)):
+            
+            if master_list[i]['playing'] == 1:
+                playing_list_str.append(master_list[i]['name'])
+
+            else:
+                not_playing_list_str.append(master_list[i]['name'])
+
+        playing_list_str = sorted(playing_list_str)
+
+        not_playing_list_str = sorted(not_playing_list_str)
+
+        #self.mainframe has all wigets except top menu, and listboxes
+        #Create & Configure root 
+        Grid.rowconfigure(master, 0, weight=1)
+        Grid.columnconfigure(master, 0, weight=1)
+
+        #Create & Configure frame 
+        self.mainframe=Frame(master)
+        self.mainframe.grid(row=0, column=0, sticky= 'nsew')
+
+        #Create a 5x3 (rows x columns) grid of buttons inside the frame
+        
+        Grid.rowconfigure(self.mainframe, 1, weight=1)
+        for col_index in range(3):
+            Grid.columnconfigure(self.mainframe, col_index, weight=1)
+
+
+##        self.mainframe = Frame(master)
+##        self.mainframe.grid(padx = 5, pady = 5, sticky = 'nesw')
+
+        # *** list accessibility ***
+##
+##        self.master_list = master_list
+##
+##        self.playing_list_str = playing_list_str
+##
+##        self.not_playing_list_str = not_playing_list_str
+        
+        
+        # *** self.mainframe wigets ***
+        
+
+        # *** Round Display ***
+
+        self.round_display_frame = Frame(self.mainframe)
+
+        self.new_round_button = Button(self.round_display_frame, text = "New Round", font = 0, command = self.new_game)
+
+        self.new_round_button.focus()
+        self.new_round_button.bind("<Return>", self.new_game)
+        
+        self.round_display = tkscrolled.ScrolledText(self.round_display_frame, undo = True, width = 26, height = 28, font = 0)
+
+        self.round_label_text = StringVar()
+        self.round_label_text.set('Round ' + str(total[0]) + ' Display')
+
+        self.round_label = Label(self.round_display_frame, textvariable = self.round_label_text, font = 10)
+        
+        self.round_display.grid(row = 1, column = 0, padx = 2, pady = 2, sticky = 'ns')
+
+        self.new_round_button.grid(row = 1, column = 2, pady = 2, padx = 2)
+
+        self.round_label.grid(row = 0, columnspan = 3)
+
+        self.round_display_frame.rowconfigure(1, weight = 1)
+
+        self.round_display_frame.grid(row = 1, column = 1, sticky = 'ns')
+
+        # ***Remove Player Frame ***
+        
+        remove_frame = Frame(self.mainframe, bd = 2, relief = SUNKEN, bg = 'light gray')
+
+        self.remove_listbox = Listbox(remove_frame, font = 0)
+        self.remove_scrollbar = Scrollbar(remove_frame, orient = VERTICAL)
+        self.remove_listbox.config(yscrollcommand = self.remove_scrollbar.set)
+        self.remove_scrollbar.config(command = self.remove_listbox.yview)
+
+        self.remove_button = Button(remove_frame, text = "Remove Player", font = 0, command=self.remove_player)
+
+        self.remove_label = Label(remove_frame, text = 'Currently Playing', bg = 'light gray', font = 10)
+
+        self.remove_listbox.bind("<Double-Button-1>", self.remove_player)
+        self.remove_listbox.bind("<ButtonRelease-1>", self.label_update)
+
+        self.remove_listbox.grid(row = 1, sticky = 'ns')
+
+        self.remove_scrollbar.grid(row = 1, column = 1, sticky = 'ns')
+        
+        self.remove_button.grid(row = 1, column = 2, padx = 2)
+
+        self.remove_label.grid(row = 0, columnspan = 3)
+
+        remove_frame.rowconfigure(1, weight = 1)
+
+        for player in sorted(playing_list_str):           #populate listbox
+            self.remove_listbox.insert(END, player)
+
+        remove_frame.grid(row = 1, column = 0, sticky = 'ns')
+
+        # *** Add Player Frame ***
+        
+        add_frame = Frame(self.mainframe, bd = 2, relief = SUNKEN, bg = 'light gray')
+        
+        self.add_listbox = Listbox(add_frame, font = 0)
+        self.add_scrollbar = Scrollbar(add_frame, orient = VERTICAL)
+        self.add_listbox.config(yscrollcommand = self.add_scrollbar.set)
+
+        self.add_scrollbar.config(command = self.add_listbox.yview)
+
+        self.add_button = Button(add_frame, text = "Add Player", font = 0, command = self.add_player)
+
+        self.add_label = Label(add_frame, text = 'Not Playing',  bg = 'light gray', font = 10)
+
+        self.add_listbox.bind("<Double-Button-1>", self.add_player)
+        self.add_listbox.bind("<ButtonRelease-1>", self.label_update)
+
+        self.add_listbox.grid(row = 1, sticky = 'ns')
+        
+        self.add_scrollbar.grid(row = 1, column = 1, sticky = 'ns')
+
+        self.add_button.grid(row = 1, column = 2, padx = 2)
+
+        self.add_label.grid(row = 0, columnspan = 3)
+
+        add_frame.rowconfigure(1, weight = 1)
+
+        for member in self.not_playing_list_str:                     #populate listbox
+            self.add_listbox.insert(END, member)
+
+        add_frame.grid(row = 1, column = 2, sticky = 'ns')
+
+        # ***Status bar ***
+
+        self.status_bar_frame = Frame(self.mainframe)
+
+        self.text_display = StringVar()
+        self.text_display.set('Displays name, skill group, and number of games played ^^')
+        
+        self.info = Label(self.mainframe, textvariable = self.text_display, fg = "blue", bd = 1, font = 0, relief = SUNKEN, anchor = W)
+        self.info.grid(row = 2, column = 0, columnspan = 3, sticky = 'ew', padx = 2)
+        
+        
+    def label_update(self, *args):
+        '''This displays the selected players stats'''
+
+        r_player = self.remove_listbox.curselection()
+
+        if r_player == '':                                  #prevents error message on doubleclick
+            return
+        
+        if self.remove_listbox.curselection() != ():        #if something is selected find player
+
+            for i in range(len(self.master_list)):
+                if self.master_list[i]['name'] == str(self.playing_list_str[r_player[0]]):
+                    self.text_display.set(self.master_list[i]['name'] + ' | Skill Group = ' + str(self.master_list[i]['skill']))
+                    break
+
+        a_player = self.add_listbox.curselection()
+
+        if a_player == '':
+            return
+        
+        if self.add_listbox.curselection() != ():
+            
+            for i in range(len(self.master_list)):
+                if self.master_list[i]['name'] == str(self.not_playing_list_str[a_player[0]]):
+                    self.text_display.set(self.master_list[i]['name'] +  ' | Skill Group = ' + str(self.master_list[i]['skill']))
+                    break
+        
+    def new_game(self, *args):
+        '''This prints the game list, with courts to the text box'''
+
+        random.shuffle(self.master_list)                         #shuffle list to randomise play
+    
+        self.master_list = sorted(self.master_list, key=itemgetter('games')) 
+        
+        orgfield = []                                       #temp list for new round
+        self.total[0] += 1
+
+        for i in range(0, len(self.master_list)):
+            if self.master_list[i]['playing'] == 1:
+                orgfield.append(self.master_list[i])                #Add first 16 players to temp list for new game
+                self.master_list[i]['games'] = self.master_list[i]['games'] + 1     #Increase the games played by those playing in round by 1
+            if len(orgfield) == 16:
+                break
+        
+        self.round_label_text.set('Round ' + str(self.total[0]) + ' Display')
+
+        game_text = ''
+
+        orgfield = sorted(orgfield, key=itemgetter('skill'))
+        
+        b=0                                                 #index for courts
+    
+        for i in range(len(orgfield)):                      #go through temp list of players and print names and court placement
+
+            game_text = game_text + orgfield[i]['name'] + '\n'
+            b=b+1
+
+            if (b % 4) == 0:                                #Court number
+
+                game_text = game_text + '\nCOURT: ' + str(b // 4) + '\n\n'
+
+        now = datetime.datetime.now()                       #timestamp for future reference
+
+        game_text = game_text + '\nRound = ' + str(self.total[0]) + ' | Started at: ' + str(now.hour) + ':'
+        if now.minute < 10:
+            game_text = game_text + '0' + str(now.minute) + '\n\n'
+        else:
+            game_text = game_text + str(now.minute) + '\n\n'
+
+        game_text = game_text + '----------------------------------------'
+
+        self.round_display.insert(1.0, str(game_text))       #prints games to listbox
+
+        orgfield = []                                       #clear temp list
+
+        self.new_round_button.focus()
+
+        self.text_display.set('Round ' + str(self.total[0]) + ' has begun')
+
+    def remove_player(self, *args):
+        '''This removes the selected player from the player list'''
+
+        player = self.remove_listbox.curselection()
+
+        if self.add_listbox.curselection() != ():
+            self.text_display.set("CHOOSE PLAYER FROM *CURRENTLY PLAYING*")
+            messagebox.askyesno("Remove Error", "You can only remove players from the *CURRENTLY PLAYING* list")
+            return
+
+        if player == ():                                    #if nothing selected move on
+            pass
+##            self.text_display.set("CANNOT REMOVE, NO PLAYER from *CURRENTLY PLAYING* SELECTED")
+##            messagebox.askyesno("Remove Error", "You can only remove players from the *CURRENTLY PLAYING* list")
+##            return
+        
+        #for person in playing_list:                          #removes selected player from player list
+        for i in range(0, len(self.master_list)):
+            if self.master_list[i]['name'] == str(self.playing_list_str[player[0]]):
+                self.text_display.set(self.master_list[i]['name'] + ' has been removed.')
+                self.master_list[i]['playing'] = 0
+                break
+
+        #Updates both listboxes
+
+        self.playing_list_str = []
+        self.not_playing_list_str = []
+
+        
+        for i in range(0, len(self.master_list)):
+            if self.master_list[i]['playing'] == 1:
+                self.playing_list_str.append(self.master_list[i]['name'])
+            else:
+                self.not_playing_list_str.append(self.master_list[i]['name'])
+
+
+        self.playing_list_str = sorted(self.playing_list_str)
+        self.remove_listbox.delete('0', 'end')
+
+        
+        for player in self.playing_list_str:
+            self.remove_listbox.insert(END, player)
+
+        
+        self.not_playing_list_str = sorted(self.not_playing_list_str)
+        self.add_listbox.delete('0', 'end')
+
+        for member in self.not_playing_list_str:
+            self.add_listbox.insert(END, member)
+
+        
+            
+    def add_player(self, *args):
+        '''This adds the selected to person to the player list'''
+
+        player = self.add_listbox.curselection()
+
+        if self.remove_listbox.curselection() != ():
+            self.text_display.set("CHOOSE PLAYER FROM *NOT PLAYING*")
+            messagebox.showerror("Add Error", "You can only add players from the *NOT PLAYING* list")
+            return
+
+        if player == ():
+            self.text_display.set("CANNOT ADD, NO PLAYER from *NOT PLAYING* SELECTED")
+            return
+        for i in range(0 , len(self.master_list)):
+            if self.master_list[i]['playing'] == 1:
+                games_played = self.master_list[i]['games']
+                break
+            if i == len(self.master_list) - 1 and self.master_list[i]['playing'] != 1:
+                games_played = 0
+                break
+
+        for i in range(0 , len(self.master_list)):          #Adds selected player to the player list and makes the added players games equal to other players
+            if self.master_list[i]['name'] == str(self.not_playing_list_str[player[0]]):    
+                self.master_list[i]['playing'] = 1
+                self.master_list[i]['games'] = games_played
+                self.text_display.set(self.master_list[i]['name'] + ' has been added.')
+                break
+
+        #This updates both listboxes
+
+        self.playing_list_str = []
+        self.not_playing_list_str = []
+        
+        for i in range(0, len(self.master_list)):
+            if self.master_list[i]['playing'] == 1:
+                self.playing_list_str.append(self.master_list[i]['name'])
+            else:
+                self.not_playing_list_str.append(self.master_list[i]['name'])
+
+
+        self.playing_list_str = sorted(self.playing_list_str)
+        self.remove_listbox.delete('0', 'end')
+
+        
+        for player in self.playing_list_str:
+            self.remove_listbox.insert(END, player)
+
+        
+        self.not_playing_list_str = sorted(self.not_playing_list_str)
+        self.add_listbox.delete('0', 'end')
+
+        for member in self.not_playing_list_str:
+            self.add_listbox.insert(END, member)
+
+"-------------------------------------------------------------------------------------------------------------------------"
+
+
+root = Tk()
+root.title("Badminton 1000")
+b = Badminton(root)
+root.mainloop
