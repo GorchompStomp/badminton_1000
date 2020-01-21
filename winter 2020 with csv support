@@ -10,7 +10,8 @@ from tkinter import messagebox
 import csv
 from operator import itemgetter
 import datetime
-import time
+from tkinter.filedialog import asksaveasfilename
+from tkinter import filedialog
 
 
 
@@ -19,40 +20,11 @@ class Badminton:
 
     def __init__(self, master):
 
-        master_list = []
-        self.master_list = master_list
-
-        playing_list_str = []
-        self.playing_list_str = playing_list_str
+        # *** Accessible variable(s), see load() for others ***
         
-        not_playing_list_str = []
-        self.not_playing_list_str = not_playing_list_str
-
         total = [0]
         self.total = total
 
-
-        with open('member_file.csv', newline = '') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                master_list.append(row)
-
-        for i in range(0, len(master_list)):
-            master_list[i]['skill'] = int(master_list[i]['skill'])
-            master_list[i]['games'] = int(master_list[i]['games'])
-            master_list[i]['playing'] = int(master_list[i]['playing'])
-
-        for i in range(0, len(master_list)):
-            
-            if master_list[i]['playing'] == 1:
-                playing_list_str.append(master_list[i]['name'])
-
-            else:
-                not_playing_list_str.append(master_list[i]['name'])
-
-        playing_list_str = sorted(playing_list_str)
-
-        not_playing_list_str = sorted(not_playing_list_str)
 
         #self.mainframe has all wigets except top menu, and listboxes
         #Create & Configure root 
@@ -69,21 +41,30 @@ class Badminton:
         for col_index in range(3):
             Grid.columnconfigure(self.mainframe, col_index, weight=1)
 
-
-##        self.mainframe = Frame(master)
-##        self.mainframe.grid(padx = 5, pady = 5, sticky = 'nesw')
-
-        # *** list accessibility ***
-##
-##        self.master_list = master_list
-##
-##        self.playing_list_str = playing_list_str
-##
-##        self.not_playing_list_str = not_playing_list_str
         
+         # *** Top Menu ***
         
+        menubar = Menu(master, tearoff = 0)
+        
+        filemenu = Menu(menubar, tearoff=0)
+
+        filemenu.add_command(label="Load", command=self.load)
+        
+        filemenu.add_command(label="Save", command=self.save)
+
+        filemenu.add_command(label="Save as", command=self.save_as)
+
+        filemenu.add_separator()
+        
+        filemenu.add_command(label="Exit", command=root.destroy)
+
+        
+        menubar.add_cascade(label="File", menu=filemenu)
+        master.config(menu=menubar)
+
+
         # *** self.mainframe wigets ***
-        
+
 
         # *** Round Display ***
 
@@ -94,28 +75,30 @@ class Badminton:
         self.new_round_button.focus()
         self.new_round_button.bind("<Return>", self.new_game)
         
-        self.round_display = tkscrolled.ScrolledText(self.round_display_frame, undo = True, width = 26, height = 28, font = 0)
+        self.round_display = tkscrolled.ScrolledText(self.round_display_frame, undo = True, width = 26, height = 30, font = 0)
 
         self.round_label_text = StringVar()
         self.round_label_text.set('Round ' + str(total[0]) + ' Display')
 
         self.round_label = Label(self.round_display_frame, textvariable = self.round_label_text, font = 10)
         
-        self.round_display.grid(row = 1, column = 0, padx = 2, pady = 2, sticky = 'ns')
+        self.round_display.grid(row = 1, column = 0, padx = 2, pady = 2, sticky = 'nsew')
 
-        self.new_round_button.grid(row = 1, column = 2, pady = 2, padx = 2)
+        self.new_round_button.grid(row = 1, column = 2, pady = 2, padx = 2, sticky = 'w')
 
         self.round_label.grid(row = 0, columnspan = 3)
 
         self.round_display_frame.rowconfigure(1, weight = 1)
 
-        self.round_display_frame.grid(row = 1, column = 1, sticky = 'ns')
+        Grid.rowconfigure(self.round_display_frame, 1, weight=1)
+
+        self.round_display_frame.grid(row = 1, column = 1, sticky = 'nsew')
 
         # ***Remove Player Frame ***
         
         remove_frame = Frame(self.mainframe, bd = 2, relief = SUNKEN, bg = 'light gray')
 
-        self.remove_listbox = Listbox(remove_frame, font = 0)
+        self.remove_listbox = Listbox(remove_frame, font = 0, width = 26)
         self.remove_scrollbar = Scrollbar(remove_frame, orient = VERTICAL)
         self.remove_listbox.config(yscrollcommand = self.remove_scrollbar.set)
         self.remove_scrollbar.config(command = self.remove_listbox.yview)
@@ -127,7 +110,7 @@ class Badminton:
         self.remove_listbox.bind("<Double-Button-1>", self.remove_player)
         self.remove_listbox.bind("<ButtonRelease-1>", self.label_update)
 
-        self.remove_listbox.grid(row = 1, sticky = 'ns')
+        self.remove_listbox.grid(row = 1, sticky = 'nsew')
 
         self.remove_scrollbar.grid(row = 1, column = 1, sticky = 'ns')
         
@@ -137,16 +120,13 @@ class Badminton:
 
         remove_frame.rowconfigure(1, weight = 1)
 
-        for player in sorted(playing_list_str):           #populate listbox
-            self.remove_listbox.insert(END, player)
-
-        remove_frame.grid(row = 1, column = 0, sticky = 'ns')
+        remove_frame.grid(row = 1, column = 0, sticky = 'nsew')
 
         # *** Add Player Frame ***
         
         add_frame = Frame(self.mainframe, bd = 2, relief = SUNKEN, bg = 'light gray')
         
-        self.add_listbox = Listbox(add_frame, font = 0)
+        self.add_listbox = Listbox(add_frame, font = 0, width = 26)
         self.add_scrollbar = Scrollbar(add_frame, orient = VERTICAL)
         self.add_listbox.config(yscrollcommand = self.add_scrollbar.set)
 
@@ -159,20 +139,18 @@ class Badminton:
         self.add_listbox.bind("<Double-Button-1>", self.add_player)
         self.add_listbox.bind("<ButtonRelease-1>", self.label_update)
 
-        self.add_listbox.grid(row = 1, sticky = 'ns')
+        self.add_listbox.grid(row = 1, sticky = 'nsew')
         
         self.add_scrollbar.grid(row = 1, column = 1, sticky = 'ns')
 
-        self.add_button.grid(row = 1, column = 2, padx = 2)
+        self.add_button.grid(row = 1, column = 2, padx = 2, sticky = 'e')
 
         self.add_label.grid(row = 0, columnspan = 3)
 
         add_frame.rowconfigure(1, weight = 1)
 
-        for member in self.not_playing_list_str:                     #populate listbox
-            self.add_listbox.insert(END, member)
 
-        add_frame.grid(row = 1, column = 2, sticky = 'ns')
+        add_frame.grid(row = 1, column = 2, sticky = 'nsew')
 
         # ***Status bar ***
 
@@ -183,6 +161,108 @@ class Badminton:
         
         self.info = Label(self.mainframe, textvariable = self.text_display, fg = "blue", bd = 1, font = 0, relief = SUNKEN, anchor = W)
         self.info.grid(row = 2, column = 0, columnspan = 3, sticky = 'ew', padx = 2)
+
+        self.load()
+
+    def load(self, *args):
+        
+        self.file_path = filedialog.askopenfilename(filetypes = [('Comma Seperated List','.csv')], title = 'Load file')
+
+        master_list = []
+        self.master_list = master_list
+
+        playing_list_str = []
+        self.playing_list_str = playing_list_str
+        
+        not_playing_list_str = []
+        self.not_playing_list_str = not_playing_list_str
+
+        total = [0]
+        self.total = total
+
+
+        with open(self.file_path, newline = '') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                master_list.append(row)
+
+        for i in range(0, len(master_list)):
+            if master_list[i]['skill'] == '':
+                master_list[i]['skill'] = 2
+            master_list[i]['skill'] = int(master_list[i]['skill'])
+            if master_list[i]['games'] == '':
+                master_list[i]['games'] = 0
+            master_list[i]['games'] = int(master_list[i]['games'])
+            if master_list[i]['playing'] == '':
+                master_list[i]['playing'] = 0
+            master_list[i]['playing'] = int(master_list[i]['playing'])
+
+        for i in range(0, len(master_list)):
+            
+            if master_list[i]['playing'] == 1:
+                playing_list_str.append(master_list[i]['name'])
+
+            else:
+                not_playing_list_str.append(master_list[i]['name'])
+
+        playing_list_str = sorted(playing_list_str)
+
+        not_playing_list_str = sorted(not_playing_list_str)
+
+        # *** populate listboxes ***
+
+        self.playing_list_str = []
+        self.not_playing_list_str = []
+
+        
+        for i in range(0, len(self.master_list)):
+            if self.master_list[i]['playing'] == 1:
+                self.playing_list_str.append(self.master_list[i]['name'])
+            else:
+                self.not_playing_list_str.append(self.master_list[i]['name'])
+
+
+        self.playing_list_str = sorted(self.playing_list_str)
+        self.remove_listbox.delete('0', 'end')
+
+        
+        for player in self.playing_list_str:
+            self.remove_listbox.insert(END, player)
+
+        
+        self.not_playing_list_str = sorted(self.not_playing_list_str)
+        self.add_listbox.delete('0', 'end')
+
+        for member in self.not_playing_list_str:
+            self.add_listbox.insert(END, member)
+
+    def save(self, *args):
+
+        self.master_list = sorted(self.master_list, key=itemgetter('name'))
+        
+        with open(self.file_path, 'w') as new_file:
+            fieldnames = ['C', 'name', 'uOttawa Email', 'Method of payment', 'Paid Yet?', 'skill', 'games', 'playing']
+
+            csv_writer = csv.DictWriter(new_file, dialect = 'excel', fieldnames = fieldnames)
+
+            csv_writer.writeheader()
+
+            for member in self.master_list:
+                csv_writer.writerow(member)
+
+    def save_as(self, *args):
+
+        self.master_list = sorted(self.master_list, key=itemgetter('name'))
+        
+        with open(asksaveasfilename(filetypes = [('Comma Seperated List','.csv')], title = 'Save File As', defaultextension = ".csv"), 'w') as new_file:
+            fieldnames = ['C', 'name', 'uOttawa Email', 'Method of payment', 'Paid Yet?', 'skill', 'games', 'playing']
+
+            csv_writer = csv.DictWriter(new_file, dialect = 'excel', fieldnames = fieldnames)
+
+            csv_writer.writeheader()
+
+            for member in self.master_list:
+                csv_writer.writerow(member)
         
         
     def label_update(self, *args):
@@ -254,7 +334,7 @@ class Badminton:
         else:
             game_text = game_text + str(now.minute) + '\n\n'
 
-        game_text = game_text + '----------------------------------------'
+        game_text = game_text + '----------------------------------------------'
 
         self.round_display.insert(1.0, str(game_text))       #prints games to listbox
 
@@ -275,8 +355,8 @@ class Badminton:
             return
 
         if player == ():                                    #if nothing selected move on
-            pass
-##            self.text_display.set("CANNOT REMOVE, NO PLAYER from *CURRENTLY PLAYING* SELECTED")
+            self.text_display.set("CANNOT REMOVE, NO PLAYER from *CURRENTLY PLAYING* SELECTED")
+            return
 ##            messagebox.askyesno("Remove Error", "You can only remove players from the *CURRENTLY PLAYING* list")
 ##            return
         
@@ -314,8 +394,6 @@ class Badminton:
         for member in self.not_playing_list_str:
             self.add_listbox.insert(END, member)
 
-        
-            
     def add_player(self, *args):
         '''This adds the selected to person to the player list'''
 
