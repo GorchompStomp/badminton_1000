@@ -1,6 +1,9 @@
 # Byron Jones   bjone079@uottawa.ca
 # This program is for organising badminton rounds.
 # The badminton club I will use it for is doubles play, with 4 available courts.
+# It reads off (and saves to) a CSV file player information, and creates a list of dict.
+# Features games sorted by amount of games played, skill, and ensures partners play together.
+
 
 import random
 from tkinter import *
