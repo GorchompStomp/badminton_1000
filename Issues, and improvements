@@ -1,10 +1,12 @@
 #Matchmaking issues:
-It is currently not possible to have players choose partners.
-It is a common request, and would be great to have a feature that would do this
+It is currently not possible to have players choose opponents.
+It is a common request, and would be great to have a feature that would do this.
 
 #ELO rating system:
-There is the basic code for ELO rating system, but it is not implemented.
-It is an open question as to its utility, and whether it is worth coding at all.
-If you feel like completeing it, feel free. This code is located in the first version of the program.
+
+#More game modes: Maybe a completely random game? No skill level, or games played? Strong with the weak?
+#Tournament rounds?
 
 #The GUI interface might need to tweeking. I think it is generally good, and working well.
+
+#Changing partners names to matching colours might be a nice addition.
