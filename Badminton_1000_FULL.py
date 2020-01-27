@@ -838,11 +838,11 @@ class Badminton:
 
                         self.save()
 
-                    self.edit_entry_frame.destroy()
+                    self.edit_top.destroy()
 
                 else:
 
-                    self.edit_entry_frame.destroy()
+                    self.edit_top.destroy()
 
                     self.edit_player()
 
