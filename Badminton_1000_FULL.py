@@ -925,7 +925,7 @@ class Badminton:
         if MsgBox == True:
 
             new_player = {'C' : '','name' : self.new_name.get(), 'uOttawa Email' : self.new_email.get(), 'Method of payment' : self.new_method.get()\
-                  , 'Paid Yet?' : self.new_pay.get(), 'skill' : self.new_skill.get(), 'games' : 0, 'playing' : 1}
+                  , 'Paid Yet?' : self.new_pay.get(), 'skill' : self.new_skill.get(), 'games' : 0, 'playing' : 1, 'partner name' : ''}
 
             self.master_list.append(new_player)
 
