@@ -928,6 +928,21 @@ class Badminton:
 
             return
 
+        if any(c.isalpha() for c in self.new_name.get()) is False:
+            messagebox.showerror('Name error', 'Player name must have letters in it.')
+            self.new_top.destroy()
+            self.new_player()
+
+            return
+
+        for i in range(len(self.master_list)):
+            if self.new_name.get() == self.master_list[i]['name']:
+                messagebox.showerror('Name Duplicate Error', 'Player must have a NEW name. A player already has this name!')
+                self.new_top.destroy()
+                self.new_player()
+
+                return
+
         MsgBox = messagebox.askyesno('Are you sure?',\
                         'Is this correct? \nName: ' + str(self.new_name.get()) \
                             + '\nemail: ' + str(self.new_email.get())\
@@ -938,7 +953,7 @@ class Badminton:
 
         if MsgBox == True:
 
-            new_player = {'C' : '','name' : self.new_name.get(), 'uOttawa Email' : self.new_email.get(), 'Method of payment' : self.new_method.get()\
+            new_player = {'name' : self.new_name.get(), 'uOttawa Email' : self.new_email.get(), 'Method of payment' : self.new_method.get()\
                   , 'Paid Yet?' : self.new_pay.get(), 'skill' : self.new_skill.get(), 'games' : 0, 'playing' : 1}
 
             self.master_list.append(new_player)
@@ -1014,8 +1029,16 @@ class Badminton:
             messagebox.showerror('None selected error', 'Please select a player from the list to delete.')
             self.delete_top.destroy()
             self.delete_player()
-
             return
+
+        for i in range(len(self.master_list)):
+            if self.master_list[i]['name'] == str(self.delete_list[player[0]]):
+                if self.master_list[i]['partner name'] != '':
+                    messagebox.showerror('Player selected has Partner!', 'Please break the partnership before deleting!')
+                    self.delete_top.destroy()
+                    self.delete_player()
+                    return
+                    
 
 
 
