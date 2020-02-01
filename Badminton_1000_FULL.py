@@ -4,7 +4,6 @@
 # It reads off (and saves to) a CSV file player information, and creates a list of dict.
 # Features games sorted by amount of games played, skill, and ensures partners play together.
 
-
 import random
 from tkinter import *
 from tkinter import ttk
@@ -86,11 +85,17 @@ class Badminton:
 
         self.round_display_frame = Frame(self.mainframe)
 
-        self.new_round_button = Button(
-            self.round_display_frame, text="New Round", font=0, command=self.new_game)
+        self.new_skill_round_button = Button(
+            self.round_display_frame, text="Skill Round", font=0, command = self.new_skill_game)
 
-        self.new_round_button.focus()
-        self.new_round_button.bind("<Return>", self.new_game)
+        self.new_coarse_skill_round_button = Button(
+            self.round_display_frame, text="Rough Skill Round", font=0, command = self.new_coarse_skill_game)
+
+        self.new_random_round_button = Button(
+            self.round_display_frame, text="Random Round", font=0, command = self.new_partner_random_game)
+
+        self.new_skill_round_button.focus()
+        self.new_skill_round_button.bind("<Return>", self.new_skill_game)
 
         self.round_display = tkscrolled.ScrolledText(
             self.round_display_frame, undo=True, width=30, height=27, font=0)
@@ -101,13 +106,21 @@ class Badminton:
         self.round_label = Label(self.round_display_frame,
                                  textvariable=self.round_label_text, font=10)
 
-        self.round_display.grid(row=1, column=0, padx=2, pady=2, sticky='nsew')
+        self.round_display.grid(row=1, column=0, padx=2, pady=2, sticky='nsew', rowspan = 4)
 
-        self.new_round_button.grid(row=1, column=2, pady=2, padx=2, sticky='w')
+        self.new_skill_round_button.grid(row=1, column=2, pady=2, padx=2, sticky='ew')
+
+        self.new_coarse_skill_round_button.grid(row=2, column=2, pady=2, padx=2, sticky='ew')
+
+        self.new_random_round_button.grid(row=3, column=2, pady=2, padx=2, sticky='ew')
 
         self.round_label.grid(row=0, columnspan=3)
 
         self.round_display_frame.rowconfigure(1, weight=1)
+
+        self.round_display_frame.rowconfigure(2, weight=1)
+
+        self.round_display_frame.rowconfigure(3, weight=1)
 
         self.round_display_frame.grid_columnconfigure(0, weight=1)
 
@@ -192,7 +205,7 @@ class Badminton:
 
         self.load()
 
-        
+
 
     def partner(self, *args):
 
@@ -263,7 +276,7 @@ class Badminton:
 
     def change_partner_skill(self, *args):
 
-        self.change_1 = self.partner_1_listbox.curselection()  
+        self.change_1 = self.partner_1_listbox.curselection()
 
         if self.change_1 == ():
             messagebox.showerror('None Selected', 'Please select someone with a partner to change their skill.')
@@ -278,7 +291,7 @@ class Badminton:
                 self.change_2 = self.master_list[i]['partner name']
                 self.change_2_skill = self.master_list[i]['skill']
                 break
-                
+
         self.partner_skill_change_top = Toplevel(self.partner_top)
         self.partner_skill_change_top.title("Select New Skill")
 
@@ -307,7 +320,7 @@ class Badminton:
         pass
 
     def partner_skill_change_confirm(self, *args):
-        
+
         MsgBox = messagebox.askyesno('Are you sure?', 'You want to change the partner skill of:\n' + self.change_1 + '\nand '
                                      + self.change_2 + '\'s skill level to: ' + str(self.change_partner_skill.get()) + '?')
 
@@ -334,10 +347,10 @@ class Badminton:
                                         self.partner_top.destroy()
                                         self.partner_skill_change_top.destroy()
                                         return
-        
+
 
     def break_partner(self, *args):
-        
+
         self.break_1 = self.partner_1_listbox.curselection()
 
         if self.partner_1_listbox.curselection() == ():
@@ -387,7 +400,7 @@ class Badminton:
 
         self.edit_break_skill_1_label.grid(row=1, column=0, pady=20, padx=2, columnspan = 2)
         self.edit_break_skill_1_menu.grid(row=1, column=1, pady=20, padx=2)
-        
+
 
         self.edit_break_skill_2_label = Label(self.edit_break_skill_entry_frame, text='Please select the Skill level of\n'
                               + self.break_2
@@ -550,7 +563,7 @@ class Badminton:
         self.partner_2 = self.partner_create_listbox.curselection()
 
         if self.partner_2 == ():
-            messagebox.showerror(  
+            messagebox.showerror(
                 'Please select partner', 'Please select a partner.', icon='error')
             self.partner_create_top.destroy()
             self.partner_top.destroy()
@@ -563,7 +576,7 @@ class Badminton:
             self.partner_create_top.destroy()
             self.partner_top.destroy()
             self.partner()
-        
+
         for i in range(0, len(self.master_list)):
             if self.master_list[i]['name'] == str(self.full_list[self.partner_2[0]]):
                 if self.master_list[i]['partner name'] != '' and self.partner_2 != ():
@@ -585,7 +598,7 @@ class Badminton:
                 else:
                     self.create_partner_skill()
                     return
-        
+
     def create_partner_skill(self, *args):
 
         self.partner_skill_top = Toplevel(self.partner_create_top)
@@ -790,14 +803,14 @@ class Badminton:
                 self.edit_current_skill.set(self.master_list[i]['skill'])
 
                 if self.master_list[i]['partner name'] != '':
-                    
+
                     self.edit_skill_menu.configure(state="disabled")
                     self.edit_current_skill.set('Can\'t change skill because\n they have a partner.\nBreakup, or change partner skill.\nCurrent partner skill: ' + str(self.master_list[i]['skill']))
                     self.edit_skill_label = Label(self.edit_entry_frame, text = 'Skill level: ', font = 0, height = 4)
                     self.edit_skill.set(self.master_list[i]['skill'])
-                            
+
                     return
-        
+
     def edit_player_confirm(self, *args):
 
         if self.edit_current_name.get() == '':
@@ -891,6 +904,7 @@ class Badminton:
 
 
         self.new_skill = IntVar()
+        self.new_skill.set(2)
         self.new_skill_label = Label(self.new_entry_frame, text = 'Skill level: ', font = 0)
         self.new_skill_menu = OptionMenu(self.new_entry_frame, self.new_skill, 1, 2, 3, 4)
 
@@ -925,25 +939,23 @@ class Badminton:
         if MsgBox == True:
 
             new_player = {'C' : '','name' : self.new_name.get(), 'uOttawa Email' : self.new_email.get(), 'Method of payment' : self.new_method.get()\
-                  , 'Paid Yet?' : self.new_pay.get(), 'skill' : self.new_skill.get(), 'games' : 0, 'playing' : 1, 'partner name' : ''}
+                  , 'Paid Yet?' : self.new_pay.get(), 'skill' : self.new_skill.get(), 'games' : 0, 'playing' : 1}
 
             self.master_list.append(new_player)
 
             self.populate_listboxes()
 
-            newbox = messagebox.showinfo('New Player Confirm', 'Player added!')
-
-            SaveBox = messagebox.askyesno('Save?', 'Would you like to save changes?', icon = 'question')
+            SaveBox = messagebox.askyesno('Save?', 'New player added! Would you like to save changes?', icon = 'question')
 
             if SaveBox == True:
 
                 self.save()
 
-            self.new_entry_frame.destroy()
+            self.new_top.destroy()
 
         else:
 
-            self.new_entry_frame.destroy()
+            self.new_top.destroy()
 
             self.new_player()
 
@@ -1024,9 +1036,7 @@ class Badminton:
 
                     self.populate_listboxes()
 
-                    deletebox = messagebox.showinfo('Delete Confirm', 'Player deleted.')
-
-                    SaveBox = messagebox.askyesno('Save?', 'Would you like to save changes?', icon = 'question')
+                    SaveBox = messagebox.askyesno('Save?', 'Player deleted. Would you like to save changes?', icon = 'question')
 
                     if SaveBox == True:
 
@@ -1102,6 +1112,7 @@ class Badminton:
             if self.master_list[i]['playing'] == '':
                 self.master_list[i]['playing'] = 0
             self.master_list[i]['playing'] = int(self.master_list[i]['playing'])
+            self.master_list[i]['games'] = 0
 
         for i in range(0, len(self.master_list)):
 
@@ -1203,76 +1214,255 @@ class Badminton:
                     self.text_display.set(self.master_list[i]['name'] +  ' | Skill Group = ' + str(self.master_list[i]['skill']))
                     break
 
-    def new_game(self, *args):
+    def new_skill_game(self, *args):
         '''This prints the game list, with courts to the text box'''
 
         random.shuffle(self.master_list)                         #shuffle list to randomise play
 
         self.master_list = sorted(self.master_list, key=itemgetter('games'))
 
-        orgfield = []                                       #temp list for new round
-        self.total[0] += 1
+        self.orgfield = []                                       #temp list for new round
 
         for i in range(0, len(self.master_list)):
 
-            if self.master_list[i]['partner name'] != '' and self.master_list[i]['playing'] == 1 and len(orgfield) < 15 and (self.master_list[i] not in orgfield):
-                orgfield.append(self.master_list[i])
+            if self.master_list[i]['partner name'] != '' and self.master_list[i]['playing'] == 1 and len(self.orgfield) < 15 and (self.master_list[i] not in self.orgfield):
+                self.orgfield.append(self.master_list[i])
                 self.master_list[i]['games'] = self.master_list[i]['games'] + 1
 
                 for e in range(0, len(self.master_list)):
-                    if self.master_list[i]['partner name'] == self.master_list[e]['name'] and self.master_list[e]['playing'] == 1 and (self.master_list[e] not in orgfield):
+                    if self.master_list[i]['partner name'] == self.master_list[e]['name'] and self.master_list[e]['playing'] == 1 and (self.master_list[e] not in self.orgfield):
 
                         self.master_list[e]['games'] = self.master_list[i]['games']
 
-                        orgfield.append(self.master_list[e])
+                        self.orgfield.append(self.master_list[e])
                         break
 
             elif self.master_list[i]['playing'] == 1 and self.master_list[i]['partner name'] == '':
-                orgfield.append(self.master_list[i])                #Add first 16 players to temp list for new game
+                self.orgfield.append(self.master_list[i])                #Add first 16 players to temp list for new game
                 self.master_list[i]['games'] = self.master_list[i]['games'] + 1     #Increase the games played by those playing in round by 1
 
-            if len(orgfield) == 16:
+            if len(self.orgfield) == 16:
                 break
+
+        self.orgfield = sorted(self.orgfield, key=itemgetter('skill'))
+
+        for i in range(0, len(self.orgfield)):
+
+            if self.orgfield[i]['partner name'] != '' and i % 2 != 0:
+
+                self.orgfield[i - 1], self.orgfield[i] = self.orgfield[i], self.orgfield[i - 1]
+
+                for b in range(i, len(self.orgfield)):
+                    if self.orgfield[b]['name'] == self.orgfield[i-1]['partner name']:
+                        partner = self.orgfield[b]
+                        self.orgfield.remove(self.orgfield[b])
+                        self.orgfield.insert(i, partner)
+                        break
+
+            elif self.orgfield[i]['partner name'] != '':
+                for e in range(0, len(self.orgfield)):
+                    if self.orgfield[e]['name'] == self.orgfield[i]['partner name']:
+                        partner = self.orgfield[e]
+                        self.orgfield.remove(self.orgfield[e])
+                        self.orgfield.insert(i, partner)
+                        break
+
+        self.new_game_display()
+
+    def new_coarse_skill_game(self, *args):
+
+        '''This prints the game list, with courts to the text box'''
+
+        random.shuffle(self.master_list)                         #shuffle list to randomise play
+
+        self.master_list = sorted(self.master_list, key=itemgetter('games'))
+
+        self.orgfield = []                                       #temp list for new round
+
+        for i in range(0, len(self.master_list)):
+
+            if self.master_list[i]['partner name'] != '' and self.master_list[i]['playing'] == 1 and len(self.orgfield) < 15 and (self.master_list[i] not in self.orgfield):
+                self.orgfield.append(self.master_list[i])
+                self.master_list[i]['games'] = self.master_list[i]['games'] + 1
+
+                for e in range(0, len(self.master_list)):
+                    if self.master_list[i]['partner name'] == self.master_list[e]['name'] and self.master_list[e]['playing'] == 1 and (self.master_list[e] not in self.orgfield):
+
+                        self.master_list[e]['games'] = self.master_list[i]['games']
+
+                        self.orgfield.append(self.master_list[e])
+                        break
+
+            elif self.master_list[i]['playing'] == 1 and self.master_list[i]['partner name'] == '':
+                self.orgfield.append(self.master_list[i])                #Add first 16 players to temp list for new game
+                self.master_list[i]['games'] = self.master_list[i]['games'] + 1     #Increase the games played by those playing in round by 1
+
+            if len(self.orgfield) == 16:
+                break
+
+        self.orgfield = sorted(self.orgfield, key=itemgetter('skill'))
+
+        first_court = []
+
+        for i in range(len(self.orgfield)):
+
+            if i < 6:
+                first_court.append(self.orgfield.pop())
+                random.shuffle(first_court)
+
+            if len(first_court) == 6:
+                self.orgfield.insert(-1, first_court.pop())
+                self.orgfield.insert(-1, first_court.pop())
+                break
+
+        second_court = []
+        
+        for i in range(len(self.orgfield)):
+
+            if i < 6:
+                second_court.append(self.orgfield.pop())
+                random.shuffle(second_court)
+
+            if len(second_court) == 6:
+                self.orgfield.insert(-1, second_court.pop())
+                self.orgfield.insert(-1, second_court.pop())
+                break
+
+        third_court = []
+
+        for i in range(len(self.orgfield)):
+
+            if i < 6:
+                third_court.append(self.orgfield.pop())
+                random.shuffle(third_court)
+
+            if len(third_court) == 6:
+                self.orgfield.insert(-1, third_court.pop())
+                self.orgfield.insert(-1, third_court.pop())
+                break
+
+        fourth_court = []
+
+        for i in range(len(self.orgfield)):
+
+            if i < 6:
+                fourth_court.append(self.orgfield.pop())
+                random.shuffle(fourth_court)
+
+            if len(fourth_court) == 6:
+                self.orgfield.insert(-1, fourth_court.pop(-1))
+                self.orgfield.insert(-1, fourth_court.pop(-1))
+                break
+
+        
+        self.orgfield.extend(fourth_court.copy())
+        self.orgfield.extend(third_court.copy())
+        self.orgfield.extend(second_court.copy())
+        self.orgfield.extend(first_court.copy())
+
+        #extend(third_court.extend(fourth_court)))
+
+        for i in range(0, len(self.orgfield)):
+
+            if self.orgfield[i]['partner name'] != '' and i % 2 != 0:
+
+                self.orgfield[i - 1], self.orgfield[i] = self.orgfield[i], self.orgfield[i - 1]
+
+                for b in range(i, len(self.orgfield)):
+                    if self.orgfield[b]['name'] == self.orgfield[i-1]['partner name']:
+                        partner = self.orgfield[b]
+                        self.orgfield.remove(self.orgfield[b])
+                        self.orgfield.insert(i, partner)
+                        break
+
+            elif self.orgfield[i]['partner name'] != '':
+                for e in range(0, len(self.orgfield)):
+                    if self.orgfield[e]['name'] == self.orgfield[i]['partner name']:
+                        partner = self.orgfield[e]
+                        self.orgfield.remove(self.orgfield[e])
+                        self.orgfield.insert(i, partner)
+                        break
+
+        self.new_game_display()
+
+    def new_partner_random_game(self, *args):
+
+        random.shuffle(self.master_list)                         #shuffle list to randomise play
+
+        self.master_list = sorted(self.master_list, key=itemgetter('games'))
+
+        self.orgfield = []                                       #temp list for new round
+
+        for i in range(0, len(self.master_list)):
+
+            if self.master_list[i]['partner name'] != '' and self.master_list[i]['playing'] == 1 and len(self.orgfield) < 15 and (self.master_list[i] not in self.orgfield):
+                self.orgfield.append(self.master_list[i])
+                self.master_list[i]['games'] = self.master_list[i]['games'] + 1
+
+                for e in range(0, len(self.master_list)):
+                    if self.master_list[i]['partner name'] == self.master_list[e]['name'] and self.master_list[e]['playing'] == 1 and (self.master_list[e] not in self.orgfield):
+
+                        self.master_list[e]['games'] = self.master_list[i]['games']
+
+                        self.orgfield.append(self.master_list[e])
+                        break
+
+            elif self.master_list[i]['playing'] == 1 and self.master_list[i]['partner name'] == '':
+                self.orgfield.append(self.master_list[i])                #Add first 16 players to temp list for new game
+                self.master_list[i]['games'] = self.master_list[i]['games'] + 1     #Increase the games played by those playing in round by 1
+
+            if len(self.orgfield) == 16:
+                break
+
+        for i in range(0, len(self.orgfield)):
+
+            if self.orgfield[i]['partner name'] != '' and i % 2 != 0:
+
+                self.orgfield[i - 1], self.orgfield[i] = self.orgfield[i], self.orgfield[i - 1]
+
+                for b in range(i, len(self.orgfield)):
+                    if self.orgfield[b]['name'] == self.orgfield[i-1]['partner name']:
+                        partner = self.orgfield[b]
+                        self.orgfield.remove(self.orgfield[b])
+                        self.orgfield.insert(i, partner)
+                        break
+
+            elif self.orgfield[i]['partner name'] != '':
+                for e in range(0, len(self.orgfield)):
+                    if self.orgfield[e]['name'] == self.orgfield[i]['partner name']:
+                        partner = self.orgfield[e]
+                        self.orgfield.remove(self.orgfield[e])
+                        self.orgfield.insert(i, partner)
+                        break
+
+        self.new_game_display()
+
+    def new_game_display(self, *args):
+
+        self.total[0] += 1
 
         self.round_label_text.set('Round ' + str(self.total[0]) + ' Display')
 
+
+        courts = ('Court 1\n\n', '\nCourt 2\n\n', '\nCourt 3\n\n', '\nCourt 4\n\n')                                               #index for courts
+
         game_text = ''
 
-        orgfield = sorted(orgfield, key=itemgetter('skill'))
+        game_text += courts[0]
 
+        for i in range(len(self.orgfield)):                      #go through temp list of players and print names and court placement
 
+            if i == 4:
+                game_text += courts[1]
 
-        for i in range(0, len(orgfield)):
+            elif i == 8:
+                game_text += courts[2]
 
-            if orgfield[i]['partner name'] != '' and i % 2 != 0:
+            elif i == 12:
+                game_text += courts[3]
 
-                orgfield[i - 1], orgfield[i] = orgfield[i], orgfield[i - 1]
+            game_text = game_text + self.orgfield[i]['name'] + '\n'
 
-                for b in range(i, len(orgfield)):
-                    if orgfield[b]['name'] == orgfield[i-1]['partner name']:
-                        partner = orgfield[b]
-                        orgfield.remove(orgfield[b])
-                        orgfield.insert(i, partner)
-                        break
-
-            elif orgfield[i]['partner name'] != '':
-                for e in range(0, len(orgfield)):
-                    if orgfield[e]['name'] == orgfield[i]['partner name']:
-                        partner = orgfield[e]
-                        orgfield.remove(orgfield[e])
-                        orgfield.insert(i, partner)
-                        break
-
-        b=0                                                 #index for courts
-
-        for i in range(len(orgfield)):                      #go through temp list of players and print names and court placement
-
-            game_text = game_text + orgfield[i]['name'] + '\n'
-            b=b+1
-
-            if (b % 4) == 0:                                #Court number
-
-                game_text = game_text + '\nCOURT: ' + str(b // 4) + '\n\n'
 
         now = datetime.datetime.now()                       #timestamp for future reference
 
@@ -1286,9 +1476,9 @@ class Badminton:
 
         self.round_display.insert(1.0, str(game_text))       #prints games to listbox
 
-        orgfield = []                                       #clear temp list
+        self.orgfield = []                                       #clear temp list
 
-        self.new_round_button.focus()
+        self.new_skill_round_button.focus()
 
         self.text_display.set('Round ' + str(self.total[0]) + ' has begun')
 
