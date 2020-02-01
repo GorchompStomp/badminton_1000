@@ -1113,6 +1113,8 @@ class Badminton:
                 self.master_list[i]['playing'] = 0
             self.master_list[i]['playing'] = int(self.master_list[i]['playing'])
             self.master_list[i]['games'] = 0
+            if self.master_list[i]['partner name'] == '':
+                self.master_list[i]['partner name'] == ''
 
         for i in range(0, len(self.master_list)):
 
